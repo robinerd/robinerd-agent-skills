@@ -5,296 +5,163 @@ description: Create, update, review, and improve developer-facing documentation 
 
 # Technical Writing
 
-Produce developer-facing documentation that is accurate, useful, easy to scan, appropriately detailed, and maintainable.
+Produce technical documentation that is accurate, useful, well-structured, easy to understand, and maintainable.
 
-This is a **documentation-engineering** skill: first determine what kind of documentation is needed, inspect the repository for facts, then apply the right level of detail.
+Consider who will read this, why, and what kind of doc is needed. Inspect the structure and information available, then choose depth and structure that fit the reader’s needs.
 
-Primary goal (not mere brevity):
+Make it easy for the reader to understand what matters, know what to do, and find the details they need without reconstructing the system themselves.
 
-> Make the reader understand what matters, know what to do, and find the exact details they need without reconstructing the system themselves.
+Before writing, consider:
 
-Optimize for **minimum cognitive load while preserving the information required for correct understanding**.
+1. Who is reading, and what are they trying to do?
+2. What must they understand to do their job?
+3. What would be expensive or dangerous to infer wrongly?
+4. What is already obvious from names, signatures, or nearby code?
+5. What is non-obvious, consequential, or contractual?
 
-## Use when
+Then invent the smallest structure that answers those questions for this project and doc type. Prefer the repo’s existing doc conventions and structure of similar documents when applicable.
 
-- Architecture or system documentation
-- API or endpoint documentation
-- Function, method, class, module, or package documentation
-- Configuration or CLI reference
-- Technical design documents and ADRs
-- Pull request descriptions
-- Changelogs or release notes
-- Migration documentation
-- Developer guides and how-tos
-- Explaining complex implementation behavior
-- Documenting errors, failure modes, concurrency, consistency, retries, or operational behavior
-- Reviewing existing technical documentation for correctness or clarity
-- Turning implementation knowledge into human-readable documentation
+## Principles
 
-Do not treat every request as the same document type. First identify the reader, task, and documentation type.
+All of the below are to be used as general guidance, not laws. The specific context and circumstances may mean doing things differently, case-by-case.
 
-## Core principles
+### 1. Write for the reader’s task
 
+**Prefer:** purpose, next action, and decision-relevant constraints up front.  
+**Avoid:** dumping implementation chronology or every related fact before the reader knows why they are here.
 
+Ask only when missing information would materially change the result; otherwise inspect the repo first.
 
-### 1. Write for the reader's task
+### 2. One primary purpose per document
 
-Before writing, determine:
+Different artifacts answer different questions (what is this, how do I start, how do I do X, why is it this way, what is the contract, why this change, what broke). Split overview, usage, explanation, and reference when one page is trying to do all of them badly.
 
-- Who is reading this?
-- What are they trying to understand or accomplish?
-- What do they already know?
-- What decision or action should they take afterward?
-- What would be dangerous or expensive to infer incorrectly?
+**Prefer:** a how-to that gets someone unblocked, with a link to deeper reference.  
+**Avoid:** a single mega-doc that mixes tutorial, full API catalog, and historical design narrative.
 
-If unclear, inspect the repository and surrounding docs before asking. Ask only when missing information materially changes the result.
+### 3. Progressive disclosure
 
-### 2. Separate documentation purposes
+Orient → mental model → normal behavior → usage → deeper semantics → edge cases → exact reference. (or similar logical structure, don't treat those literally as headers)
 
+**Prefer:** a short overview a busy engineer can stop after.  
+**Avoid:** opening with internals, file lists, or exhaustive edge cases before the reader knows what the thing is.
 
-| Type                | Primary question                          |
-| ------------------- | ----------------------------------------- |
-| README              | What is this?                             |
-| Getting started     | How do I begin?                           |
-| Tutorial            | Can you teach me?                         |
-| How-to              | How do I accomplish X?                    |
-| Concept/explanation | Why does this work this way?              |
-| Architecture        | How is the system structured?             |
-| API reference       | What exactly is the interface contract?   |
-| Function reference  | What exactly does this function do?       |
-| ADR                 | Why was this design chosen?               |
-| PR                  | Why was this change made?                 |
-| Changelog           | What changed between versions?            |
-| Runbook             | What do I do when this breaks?            |
-| Code comment        | Why is this local implementation unusual? |
+### 4. Low cognitive load
 
+Keep related facts together. Use descriptive headings, short sections, concrete examples, tables for comparisons/parameters, lists for parallel items, diagrams for relationships/flows, and consistent terms.
 
-When appropriate, separate overview, usage, explanation, and reference material.
+**Prefer:**
 
-### 3. Use progressive disclosure
+> `timeout` — max request duration in ms. Default `30000`. `0` disables the client-side timeout.
 
-Organize broad → deep:
+**Avoid:** scattering default, units, and “what zero means” across three sections.
 
-1. Orientation
-2. Mental model
-3. Important behavior
-4. Typical usage
-5. Detailed behavior
-6. Edge cases
-7. Exact reference or implementation details
+**Prefer:** headings that name the topic (`Retry behavior`, `Auth`).  
+**Avoid:** `Details`, `Other`, `Miscellaneous`, or skill-specific labels that are not natural section titles for this project.
 
-Readers should stop after the overview if they only need orientation. Do not put implementation details before explaining what the component does and why it exists.
+### 5. Detail scales with consequence
 
-### 4. Optimize for cognitive load
+> Be brief about the obvious, explicit about the non-obvious, detailed about the consequential, and precise about contracts.
 
-Prefer: related facts together, descriptive headings, short sections, concrete examples, tables for comparisons, lists for parallel items, diagrams for relationships/flows, consistent terminology, explicit contracts.
+**Prefer:** documenting defaults, auth, errors, side effects, idempotency, consistency, and invariants when misunderstanding is expensive.  
+**Avoid:** shortening away failure modes “to keep it clean,” or padding obvious getters with essay-length prose.
 
-Avoid scattering important facts across unrelated sections.
+When behavior would catch a competent developer off guard (soft delete, eventual consistency, hidden retries, non-idempotent ops, timeouts that do not cancel work, flag-gated behavior), put it where they will see it—in normal prose under a natural heading—not buried, and not under a stock label invented by this skill.
 
-### 5. Concise about the obvious; detailed about the consequential
+### 6. Verify before you assert
 
-> Be concise about what is obvious, detailed about what is consequential, explicit about what is surprising, and exhaustive about what constitutes a contract.
+Inspect code, tests, interfaces/schemas, config, existing docs/ADRs, and history when intent matters. Prefer evidence over vibe.
 
-Do not simplify away necessary complexity merely to shorten documentation.
+**Prefer:** “Retries up to 3 times with exponential backoff” (confirmed in code/tests).  
+**Avoid:** inventing guarantees, performance claims, or rationale. If unsure, say what is known vs unknown.
 
-## Repository investigation
+Keep categories straight: fact (current behavior), decision, rationale, assumption, constraint, recommendation. Do not present assumptions as guarantees.
 
-Before factual technical claims, inspect the source of truth:
+### 7. Precise language, project vocabulary
 
-- Source code, tests, public interfaces/schemas
-- Existing documentation and ADRs
-- Configuration, dependencies, build/deploy config
-- Database migrations/schemas, events, API specs
-- Recent commits / PR history when intent matters
-- Generated docs only when authoritative
+Use real technical terms when they increase precision; define once if ambiguous, then stick to one name per concept.
 
-Prefer repository evidence over assumptions.
+**Prefer:** “The worker processes jobs asynchronously.”  
+**Avoid:** “leverages a highly scalable, decoupled, event-driven paradigm.”
 
-When behavior is unclear:
+Use modals deliberately: `must` / `must not` (requirement), `should` (advice), `may`/`can` (permission/capability), `typically` (common, not guaranteed), `always`/`never` (only when justified).
 
-1. Search for the symbol or concept
-2. Inspect implementation
-3. Inspect tests
-4. Inspect callers/consumers
-5. Check configuration and related types
-6. Check existing documentation
-7. Check recent changes if historical intent matters
-8. Only then write
+**Prefer:** one idea per sentence; active voice when the actor matters.  
+**Avoid:** Mixing different synonyms (e.g `request ID` / `correlation ID` / `trace id`) for the same thing). Long explicit multi-condition sentences.
 
-Never invent implementation details, guarantees, defaults, performance characteristics, error behavior, or architectural rationale. If uncertain, say so.
-
-## Facts vs decisions vs assumptions
-
-Keep categories separate:
+### 8. Right artifact for the information
 
 
-| Category       | Meaning                     | Example                                                   |
-| -------------- | --------------------------- | --------------------------------------------------------- |
-| Fact           | Current behavior            | The worker stores jobs in PostgreSQL.                     |
-| Decision       | Intentionally chosen        | PostgreSQL is the system of record for workflow state.    |
-| Rationale      | Why a decision was made     | PostgreSQL provides the required transactional semantics. |
-| Assumption     | Relied upon, not guaranteed | Workflow state is expected to remain below 10 GB.         |
-| Constraint     | Imposed requirement         | Must support at least 1,000 requests per second.          |
-| Recommendation | Advice                      | Clients should retry `503` with exponential backoff.      |
+| Concern                       | Usually belongs in      |
+| ----------------------------- | ----------------------- |
+| Current behavior              | Current docs            |
+| Why a major design was chosen | ADR / design doc        |
+| Why this change landed        | PR description          |
+| What changed between releases | Changelog               |
+| Local oddity in code          | Comment (why, not what) |
 
 
+**Prefer:** current docs that describe the system as it is.  
+**Avoid:** turning a reference page into a project chronology, or mixing obsolete plans with live contracts.
 
+Useful short repetition is fine (“requires an OAuth token”); contradictory duplicated sources of truth are not.
 
-## Language and style
+### 9. Structure based on needs
 
-- Prefer precise technical terms over vague paraphrase; define unfamiliar terms once, then use consistently.
-- Avoid decorative jargon ("leverages an asynchronous execution paradigm").
-- Keep distinct concepts distinct; do not alternate synonyms for the same thing.
-- Modal language: `must` / `must not` (mandatory), `should` (recommendation), `may` (permission), `can` (capability), `typically` (common, not guaranteed), `always` / `never` (only when justified).
-- Prefer concrete active voice: "The worker deletes expired sessions." Use passive when the actor is irrelevant.
-- One meaningful cognitive operation per sentence — not artificially short fragments, not multi-condition monsters.
+Document structure depends on what the reader must learn.
 
+- **Architecture:** responsibilities, boundaries, data/state ownership, sync vs async, failure/retry, consistency, trust boundaries—and *why* those boundaries exist. Diagrams for structure; prose for semantics.
+- **API / function reference:** the observable contract (inputs, outputs, defaults, errors, side effects, auth, idempotency, limits)—not only the signature.
+- **PR:** intent, behavior change, risks, test/rollout notes, review focus—not a file-by-file transcript the diff already shows.
+- **ADR:** one decision: context, options, choice, rationale, consequences.
+- **Changelog:** curated user/dev-relevant changes—not every commit.
+- **Comments:** why the non-obvious approach exists; never `// increment counter`.
 
+**Prefer (PR):** why, observable impact, risks, what was verified.  
+**Avoid (PR):** “Added class A. Updated class B. Added tests.”
 
-### Headings
+**Prefer (API):** what happens when the user is missing, deleted, unauthorized, or the call is retried.  
+**Avoid (API):** signature-only docs that leave behavior unwritten.
 
-Descriptive: `## Request lifecycle`, `## Retry behavior`. Avoid `## Details`, `## Other`, `## Miscellaneous`. Headings are navigation and search anchors.
+**Prefer (comment):**
 
-### Lists, tables, prose
-
-Prose for explanations; lists for parallel items; tables for parameters, errors, comparisons, state transitions, defaults. Do not bullet-ize normal prose.
-
-### Code formatting
-
-Inline code for literals (`UserService`, `POST /users`, `config.yaml`). Code blocks for commands, source, configs, schemas. Do not code-format ordinary emphasis.
-
-## What to document thoroughly
-
-Spend effort where misunderstanding is expensive:
-
-```
-Obvious → brief
-Non-obvious → explicit
-Consequential → detailed
-Security / compatibility / API contract → precise and exhaustive
+```text
+// Publish after commit so consumers never see uncommitted state.
 ```
 
-Always prioritize documenting when relevant:
+**Avoid (comment):**
 
-- **Defaults and config** — defaults, required/optional, nullability, empty values, env vars, precedence, limits, feature flags, version-specific behavior
-- **Errors and failure** — success/failure/retryability/recovery; timeouts; partial failure; duplicates; rollbacks; async failure
-- **Invariants and guarantees** — words like `must`, `cannot`, `always`, `exactly`, `at least once` often mark contracts
-- **Surprises** — soft delete, eventual consistency, hidden retries, non-idempotent ops, unexpected status codes, timeouts that do not cancel work, flag-dependent behavior
-- **Versioning** — state when behavior changed (`Since v3.2, …`); do not mix incompatible contracts
+```text
+// Publish the event.
+```
 
 
 
-## Historical information belongs in the right artifact
+### 10. Discoverability
 
+Write for skimmers and searchers. Headings and terms should match how engineers look for help. Links should say why to follow them.
 
-| Concern                          | Artifact              |
-| -------------------------------- | --------------------- |
-| Current behavior                 | Current documentation |
-| Why a major design was chosen    | ADR                   |
-| Why a particular change was made | PR                    |
-| What changed between releases    | Changelog             |
-| Local implementation rationale   | Code comment          |
+**Prefer:** “See message delivery for retry and deduplication.”  
+**Avoid:** “See this for more information.”
 
+## Working loop
 
-Do not turn current docs into a project chronology.
-
-## Avoid contradictory duplication
-
-Useful contextual repetition is fine (endpoint: "Requires an OAuth access token" + full auth doc elsewhere). Avoid duplicated facts that can drift apart.
-
-## Discoverability and links
-
-Write for skimmers and searchers. Prefer task-shaped headings (`## Handle \`429 Too Many Requests`) when troubleshooting is the job. Links should answer "where next?" with a clear reason — not "see this for more information."
-
-## Documentation workflow
-
-1. **Classify** — tutorial, how-to, explanation, reference, architecture, ADR, PR, changelog, runbook, comment, other
-2. **Identify the reader** — audience, knowledge, goal, expected action
-3. **Investigate** — code, tests, config, APIs, schemas, docs, history
-4. **Build the mental model** — components, responsibilities, data flow, state, boundaries, contracts, failures, decisions
-5. **Choose hierarchy** — Purpose → Context → Mental model → Normal behavior → Usage → Semantics → Failures → Reference → Rationale (adapt to type)
-6. **Write the overview first** — busy developer gets the important 20% without the remaining 80%
-7. **Add depth** by consequence, surprise, and contractual importance
-8. **Verify claims** against code, tests, types, config, authoritative docs
-9. **Review cognitive load** — sentences, terms, grouping, headings, examples, defaults, failures
-10. **Review maintainability** — staleness risk, source of truth, right artifact, natural update path
+1. Classify the artifact and reader.
+2. Investigate the source of truth.
+3. Form the mental model (parts, flow, state, contracts, failures).
+4. Choose a hierarchy that fits *this* doc—overview first.
+5. Add depth where cost of misunderstanding is high.
+6. Verify claims; mark uncertainty honestly.
+7. Skim for cognitive load and maintainability (will this rot? wrong artifact? contradictory dupes?).
 
 
 
-## Quality gate
+## Done when
 
+A competent technical reader can:
 
+- grasp what this is, why it exists, and the normal path quickly
+- find exact contract details (defaults, errors, limits, edge behavior) without reading all the source
+- trust that written behavior matches the system—and see clearly where something was not verified
 
-### Reader
-
-- [ ] Audience and task clear; prior knowledge reasonable; purpose immediate
-
-
-
-### Structure
-
-- [ ] Right document type; overview before depth; descriptive headings; progressive disclosure; related facts grouped
-
-
-
-### Technical correctness
-
-- [ ] Claims checked against the repo; nothing invented; defaults/errors/side effects/invariants/versions documented where relevant; uncertainty not presented as fact
-
-
-
-### Language
-
-- [ ] Consistent terminology; precise technical terms; no decorative jargon; concrete sentences; intentional modals; consistent code formatting
-
-
-
-### Cognitive load
-
-- [ ] Mental model given, not reconstructed; useful examples; tables/lists where appropriate; advanced detail separated; surprises easy to find
-
-
-
-### Maintainability
-
-- [ ] Current behavior vs history separated; changelog/ADR/API material not mixed; no contradictory duplication; clear relationship to the system
-
-
-
-## Final standard
-
-> A competent developer should understand the important 80% quickly, find the exact 20% they need, and trust that documented behavior reflects the actual system.
-
-- **Five-minute test** — what/why/where it fits/normal flow/constraints/where deeper info lives
-- **Ten-minute implementation test** (usage/API) — auth, I/O, defaults, errors, behavior, retry/idempotency, limits without reading source
-- **Six-month test** (architecture/design) — why it looks this way, boundaries, deliberate decisions, rejected alternatives, assumptions
-
-
-
-## Output behavior
-
-When creating or updating documentation:
-
-1. Inspect the repository before technical claims
-2. Identify documentation type and reader
-3. Prefer the smallest structure that fully serves the task
-4. Overview before deep implementation detail
-5. Precise technical terminology
-6. Explain `why` when not obvious from code
-7. Document observable behavior, not merely restated implementation
-8. Explicitly document important defaults, constraints, errors, side effects, invariants, and surprises
-9. Keep historical rationale in ADRs/PRs, not current-state docs
-10. Verify against implementation and tests
-11. Do not claim verification that did not happen
-12. Mark genuine uncertainty; never invent
-13. Preserve project terminology and doc conventions unless change is compelling
-14. When editing, preserve useful local structure; improve incrementally
-15. Prefer human-readable docs over merely comprehensive-looking ones
-
-Desired result: **accurate, structured, discoverable, precise, appropriately detailed, cognitively light, technically meaningful, and maintainable.**
-
-## Additional resources
-
-- Document-type templates (architecture, API, function, PR, ADR, changelog, comments): [templates.md](templates.md)
-- Anti-patterns and elaboration on surprises / comments: [anti-patterns.md](anti-patterns.md)
-
+Ship docs that are **accurate, structured, discoverable, precise, appropriately detailed, cognitively light, and maintainable**—using the project’s own voice, not this skill’s vocabulary as decoration.
