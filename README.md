@@ -3,10 +3,10 @@
 Some useful skill definitions for AI agents. Made these for Cursor, but should work in most AI tools.
 
 
-| Skill                                        | What it does                                                                                       |
-| -------------------------------------------- | -------------------------------------------------------------------------------------------------- |
-| `[senior-engineering](./senior-engineering)` | Engineering principles for large-scale software development. Writing code was never the hard part. |
-| `[technical-writing](./technical-writing)`   | Technical docs which are well structured, accurate and less overwhelming to read.                  |
+| Skill                                      | What it does                                                                                       |
+| ------------------------------------------ | -------------------------------------------------------------------------------------------------- |
+| [senior-engineering](./senior-engineering) | Engineering principles for large-scale software development. Writing code was never the hard part. |
+| [technical-writing](./technical-writing)   | Technical docs which are well structured, accurate and less overwhelming to read.                  |
 
 
 
