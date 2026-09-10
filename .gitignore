@@ -1,0 +1,15 @@
+# OS junk
+.DS_Store
+.DS_Store?
+.Spotlight-V100
+.Trashes
+Thumbs.db
+
+# Env / secrets
+# (not sure why you'd ever keep those in this folder, but just in case...)
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+credentials.json
